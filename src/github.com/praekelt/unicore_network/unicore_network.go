@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/go-martini/martini"
 )
 
@@ -11,4 +12,8 @@ func New() *martini.ClassicMartini {
 	})
 	m.Run()
 	return m
+}
+
+func main() {
+	New()
 }
