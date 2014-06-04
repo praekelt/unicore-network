@@ -6,9 +6,7 @@ import (
 
 func New() *martini.ClassicMartini {
 	m := martini.Classic()
-	m.Get("/", func() string {
-		return "Hello world!"
-	})
+	m.Get("/", Get)
 	m.Run()
 	return m
 }
