@@ -1,4 +1,4 @@
-package unicore_network_test
+package unicore_network
 
 import (
 	. "github.com/onsi/ginkgo"
