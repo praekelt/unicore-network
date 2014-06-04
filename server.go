@@ -1,4 +1,4 @@
-package uc_network
+package unicore_network
 
 import (
     "github.com/go-martini/martini"
