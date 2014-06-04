@@ -4,4 +4,4 @@ go:
 services:
   - redis-server
 script:
-  - go test -v ./...
+  - go test -v github.com/praekelt/uc_network
