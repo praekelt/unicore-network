@@ -1,4 +1,4 @@
-package uc_network_test
+package uc_network
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestUcNetwork(t *testing.T) {
+func TestUnicoreNetwork(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "UcNetwork Suite")
+	RunSpecs(t, "UnicoreNetwork Suite")
 }
