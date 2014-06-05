@@ -4,7 +4,7 @@ import (
 	"github.com/go-martini/martini"
 )
 
-func New() *martini.ClassicMartini {
+func New(identity Ident) *martini.ClassicMartini {
 	m := martini.Classic()
 	m.Use(DB())
 	m.Get("/identity", GetIdentity)

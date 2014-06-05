@@ -1,8 +1,10 @@
 package server
 
 import (
+	"code.google.com/p/go-uuid/uuid"
 	"gopkg.in/yaml.v1"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -14,6 +16,16 @@ type Ident struct {
 
 func CreateIdentity(signature string, hostname string, display_name string) Ident {
 	return Ident{Signature: signature, Hostname: hostname, DisplayName: display_name}
+}
+
+func GetOrCreateIdentity(filename string) (Ident, error) {
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		log.Printf("Creating identity file: %s", filename)
+		identity := CreateIdentity(uuid.New(), "localhost", "UC Network Node")
+		return SaveIdentity(identity, filename)
+	}
+	log.Printf("Loading identity file: %s", filename)
+	return LoadIdentity(filename)
 }
 
 func SaveIdentity(identity Ident, filename string) (Ident, error) {

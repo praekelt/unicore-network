@@ -7,7 +7,8 @@ import (
 )
 
 func do_request(request *http.Request) *httptest.ResponseRecorder {
-	m := New()
+	ident := CreateIdentity("identity", "localhost", "test node")
+	m := New(ident)
 	response := httptest.NewRecorder()
 	m.ServeHTTP(response, request)
 	return response
