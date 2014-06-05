@@ -1,3 +1,4 @@
 #!/bin/bash
+export GOPATH=`pwd`
 go get ./...
-go build -o ./build/unicore_network -v github.com/praekelt/unicore_network
+go build -o ./bin/unicore_network -v github.com/praekelt/unicore_network
