@@ -4,8 +4,8 @@ go:
 services:
   - redis-server
 install:
-  - go get github.com/go-martini/martini
-  - go get github.com/fzzy/radix/redis
-  - go get gopkg.in/yaml.v1
+  - go get -t github.com/go-martini/martini
+  - go get -t github.com/fzzy/radix/redis
+  - go get -t gopkg.in/yaml.v1
 script:
-  - go test -v github.com/praekelt/unicore_network/...
+  - go test -v ./...
