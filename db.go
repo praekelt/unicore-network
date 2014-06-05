@@ -4,6 +4,7 @@ import (
 	"github.com/fzzy/radix/redis"
 	"github.com/go-martini/martini"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -16,11 +17,15 @@ func DB() martini.Handler {
 	// connect to the db
 	redis_network := os.Getenv("REDIS_NETWORK")
 	redis_addr := os.Getenv("REDIS_ADDR")
+	redis_db := os.Getenv("REDIS_DB")
 	if redis_network == "" {
 		redis_network = "tcp"
 	}
 	if redis_addr == "" {
 		redis_addr = "127.0.0.1:6379"
+	}
+	if redis_db == "" {
+		redis_db = "0"
 	}
 
 	// NOTE: On a low level this uses net.Dial, see:
@@ -35,7 +40,11 @@ func DB() martini.Handler {
 	defer conn.Close()
 
 	// select db
-	conn.Cmd("select", 0)
+	redis_db_number, err := strconv.Atoi(redis_db)
+	if err != nil {
+		panic(err)
+	}
+	conn.Cmd("select", redis_db_number)
 
 	return func(c martini.Context) {
 		// make available to subsequent handlers
