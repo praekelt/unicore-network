@@ -13,7 +13,7 @@ func do_request(request *http.Request) *httptest.ResponseRecorder {
 	return response
 }
 
-func TestGetIdent(t *testing.T) {
+func TestGetIdentity(t *testing.T) {
 
 	request, _ := http.NewRequest("GET", "/identity", nil)
 	response := do_request(request)
@@ -22,7 +22,7 @@ func TestGetIdent(t *testing.T) {
 		t.Error("Expected 200 response code, got:", response.Code)
 	}
 
-	if response.Body.String() != "Hello world! " {
+	if response.Body.String() != "Hello world!" {
 		t.Error("Unexpected response:", response.Body.String())
 	}
 }
