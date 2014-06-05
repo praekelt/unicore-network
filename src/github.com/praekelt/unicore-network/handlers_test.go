@@ -8,17 +8,18 @@ import (
 )
 
 func TestHandlers(t *testing.T) {
-	request, _ := http.NewRequest("GET", "http://localhost:3000/", nil)
+	request, _ := http.NewRequest("GET", "/foo", nil)
 	response := httptest.NewRecorder()
 	m := martini.Classic()
-	m.Get("/", Get)
+	m.Use(DB())
+	m.Get("/:id", Get)
 	m.ServeHTTP(response, request)
 
 	if response.Code != 200 {
-		t.Error("Expected 200 response code, got: %s", response.Code)
+		t.Errorf("Expected 200 response code, got: %s", response.Code)
 	}
 
-	if response.Body.String() != "Hello world!" {
-		t.Error("Unexpected response: %s", response.Body.String())
+	if response.Body.String() != "Hello world! foo" {
+		t.Errorf("Unexpected response: %s", response.Body.String())
 	}
 }
