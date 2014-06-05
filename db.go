@@ -23,6 +23,8 @@ func DB() martini.Handler {
 		redis_addr = "127.0.0.1:6379"
 	}
 
+	// NOTE: On a low level this uses net.Dial, see:
+	//		 http://golang.org/pkg/net/#Dial for details on network & addr
 	conn, err := redis.DialTimeout(
 		redis_network, redis_addr,
 		time.Duration(10)*time.Second)
