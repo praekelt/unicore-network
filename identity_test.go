@@ -1,7 +1,6 @@
 package unicore_network
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v1"
 	"io/ioutil"
 	"os"
