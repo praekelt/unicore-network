@@ -1,4 +1,4 @@
-package unicore_network
+package server
 
 import (
 	"gopkg.in/yaml.v1"

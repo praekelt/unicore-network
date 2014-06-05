@@ -1,4 +1,4 @@
-package unicore_network
+package server
 
 import (
 	"github.com/fzzy/radix/redis"
