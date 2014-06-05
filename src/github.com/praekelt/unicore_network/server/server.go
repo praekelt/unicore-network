@@ -6,6 +6,7 @@ import (
 
 func New(identity Ident) *martini.ClassicMartini {
 	m := martini.Classic()
+	m.Map(identity)
 	m.Use(DB())
 	m.Get("/identity", GetIdentity)
 	return m

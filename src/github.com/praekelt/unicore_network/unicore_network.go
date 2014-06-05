@@ -5,20 +5,30 @@ import (
 	"github.com/praekelt/unicore_network/server"
 	"log"
 	"net/http"
+	"os/user"
+	"path/filepath"
 )
 
 func main() {
-	address := flag.String("address", ":8080", "The address to listen on.")
-	identity_file := flag.String("identity", "~/.uc_identity.yaml", "Which identity file to use.")
+	var identity_file string
+	var address string
+
+	flag.StringVar(&address, "address", ":8080", "The address to listen on.")
+	flag.StringVar(&identity_file, "identity", "", "Which identity file to use.")
 	flag.Parse()
 
-	log.Printf("Listening on %s", *address)
+	log.Printf("Listening on %s", address)
 
-	identity, _ := server.GetOrCreateIdentity(*identity_file)
+	if identity_file == "" {
+		user, err := user.Current()
+		if err != nil {
+			log.Fatal(err)
+		}
+		identity_file = filepath.Join(user.HomeDir, ".uc_identity.yaml")
+	}
+
+	identity, _ := server.GetOrCreateIdentity(identity_file)
 
 	m := server.New(identity)
-	err := http.ListenAndServe(*address, m)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(http.ListenAndServe(address, m))
 }
