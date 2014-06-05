@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/fzzy/radix/redis"
 	"github.com/go-martini/martini"
+	"os"
 	"time"
 )
 
@@ -13,8 +14,17 @@ NOTE: http://blog.gopheracademy.com/day-11-martini explains how this stuff
 */
 func DB() martini.Handler {
 	// connect to the db
+	redis_network := os.Getenv("REDIS_NETWORK")
+	redis_addr := os.Getenv("REDIS_ADDR")
+	if redis_network == "" {
+		redis_network = "tcp"
+	}
+	if redis_addr == "" {
+		redis_addr = "127.0.0.1:6379"
+	}
+
 	conn, err := redis.DialTimeout(
-		"tcp", "127.0.0.1:6379",
+		redis_network, redis_addr,
 		time.Duration(10)*time.Second)
 	if err != nil {
 		panic(err)
