@@ -1,11 +1,12 @@
 package server
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/fzzy/radix/redis"
 	"net/http"
 )
 
-func GetIdentity(request *http.Request, db *redis.Client) string {
-	return fmt.Sprintf("Hello world!")
+func GetIdentity(request *http.Request, db *redis.Client, identity Ident) string {
+	bytes, _ := json.Marshal(identity)
+	return string(bytes)
 }
