@@ -19,7 +19,7 @@ func CreateIdentity(signature string, hostname string, display_name string) Iden
 func SaveIdentity(identity Ident, filename string) (Ident, error) {
 	fp, err := os.Create(filename)
 	if err != nil {
-		return Ident{}, err
+		return identity, err
 	}
 	defer fp.Close()
 	return SaveIdentityFile(identity, fp)
