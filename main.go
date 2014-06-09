@@ -29,6 +29,9 @@ func main() {
 
 	identity, _ := server.GetOrCreateIdentity(identity_file)
 
-	m := server.New(identity)
-	log.Fatal(http.ListenAndServe(address, m))
+	// TODO: make this configurable again
+	db := DB{Network: "tcp", Address: "127.0.0.1:6379", Database: 0}
+	server := Server{Identity: identity, DB: db}
+
+	log.Fatal(http.ListenAndServe(address, server.New()))
 }

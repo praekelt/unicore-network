@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -9,18 +10,20 @@ import (
 
 func do_request(request *http.Request) *httptest.ResponseRecorder {
 	ident := CreateIdentity("identity", "localhost", "test node")
-	m := New(ident)
+	db := DB{Network: "tcp", Address: "127.0.0.1:6379", Database: 0}
+	server := Server{Identity: ident, Db: db}
+	martini := server.New()
 	response := httptest.NewRecorder()
-	m.ServeHTTP(response, request)
+	martini.ServeHTTP(response, request)
 	return response
 }
 
-func TestGetIdentity(t *testing.T) {
+func TestGetOwnIdentity(t *testing.T) {
 
 	request, _ := http.NewRequest("GET", "/identity", nil)
 	response := do_request(request)
 
-	if response.Code != 200 {
+	if response.Code != http.StatusOK {
 		t.Error("Expected 200 response code, got:", response.Code)
 	}
 
@@ -31,5 +34,19 @@ func TestGetIdentity(t *testing.T) {
 	}
 	if ident != CreateIdentity("identity", "localhost", "test node") {
 		t.Error("Unexpected identity returned", ident)
+	}
+}
+
+func TestPutNodeIdentity(t *testing.T) {
+	ident := CreateIdentity("foo", "bar", "baz")
+	b, _ := json.Marshal(ident)
+	request, _ := http.NewRequest("PUT", "/network/foo", bytes.NewReader(b))
+	response := do_request(request)
+	if response.Code != http.StatusCreated {
+		t.Error("Unexpected HTTP response", response)
+	}
+	location_header := response.Header().Get("Location")
+	if location_header != "/network/foo" {
+		t.Error("Unexpected Location header", location_header)
 	}
 }
