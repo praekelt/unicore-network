@@ -9,9 +9,9 @@ import (
 )
 
 type Ident struct {
-	Signature   string
-	Hostname    string
-	DisplayName string
+	Signature   string `json:"signature"`
+	Hostname    string `json:"hostname"`
+	DisplayName string `json:"display_name"`
 }
 
 func CreateIdentity(signature string, hostname string, display_name string) Ident {
