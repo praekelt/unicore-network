@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/praekelt/unicore_network/server"
+	"github.com/praekelt/unicore-network/server"
 	"log"
 	"net/http"
 	"os/user"
