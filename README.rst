@@ -1,7 +1,7 @@
 Unicore Network
 ===============
 
-|travis|_ |coveralls|_
+|travis|_
 
 Universal Core network server.
 
