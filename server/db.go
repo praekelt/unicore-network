@@ -1,37 +1,36 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/fzzy/radix/redis"
-	"github.com/go-martini/martini"
 	"time"
 )
-
-/*
-NOTE: http://blog.gopheracademy.com/day-11-martini explains how this stuff
-      mostly works. It's a bit like Django middleware but allows one to
-      insert extra parameters that are passed along to the handler (view)
-*/
 
 type DB struct {
 	Network  string
 	Address  string
-	Database int32
+	Database int
 }
 
-func (db *DB) Handler() martini.Handler {
+func (db *DB) Connect() (*redis.Client, error) {
 	// NOTE: On a low level this uses net.Dial, see:
 	//		 http://golang.org/pkg/net/#Dial for details on network & addr
 	conn, err := redis.DialTimeout(db.Network, db.Address, time.Duration(10)*time.Second)
 	if err != nil {
+		return conn, err
+	}
+	result := conn.Cmd("select", db.Database)
+	if result.Err != nil {
+		return conn, err
+	}
+	return conn, err
+}
+
+func (db *DB) Save(conn *redis.Client, ident Ident) error {
+	data, err := json.Marshal(ident)
+	if err != nil {
 		panic(err)
 	}
-
-	// select db
-	conn.Cmd("select", db.Database)
-
-	return func(c martini.Context) {
-		// make available to subsequent handlers
-		c.Map(conn)
-		c.Next()
-	}
+	result := conn.Cmd("zadd", "nodes", time.Now().Unix(), data)
+	return result.Err
 }

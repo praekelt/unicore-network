@@ -3,10 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fzzy/radix/redis"
-	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 func (s *Server) GetOwnIdentity(response http.ResponseWriter, request *http.Request) (int, string) {
@@ -14,16 +11,21 @@ func (s *Server) GetOwnIdentity(response http.ResponseWriter, request *http.Requ
 	return http.StatusOK, string(bytes)
 }
 
-func (s *Server) PutNodeIdentity(response http.ResponseWriter, request *http.Request, db *redis.Client) (int, string) {
-	request_bytes, _ := ioutil.ReadAll(request.Body)
-	request_body := string(request_bytes)
-
+func (s *Server) PutNodeIdentity(response http.ResponseWriter, request *http.Request) (int, string) {
 	ident := Ident{}
-	json.Unmarshal(request_bytes, &ident)
+	decoder := json.NewDecoder(request.Body)
+	decoder.Decode(&ident)
 
-	result := db.Cmd("zadd", time.Now().Unix(), request_body)
-	i, _ := result.Int64()
-	fmt.Println("result", i)
+	conn, err := s.Db.Connect()
+	defer conn.Close()
+	if err != nil {
+		panic(err)
+	}
+
+	err = s.Db.Save(conn, ident)
+	if err != nil {
+		panic(err)
+	}
 
 	// NOTE:    As far as I can tell Martini doesn't have the concept of named
 	//          URLs like Django has which forces me to duplicate URL path names

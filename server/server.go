@@ -6,13 +6,11 @@ import (
 
 type Server struct {
 	Identity Ident
-	Db       DB
+	Db       *DB
 }
 
 func (s *Server) New() *martini.ClassicMartini {
 	m := martini.Classic()
-	m.Map(s)
-	m.Use(s.Db.Handler())
 	m.Get("/identity", s.GetOwnIdentity)
 	m.Put("/network/:string", s.PutNodeIdentity)
 	return m

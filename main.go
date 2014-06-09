@@ -31,7 +31,7 @@ func main() {
 
 	// TODO: make this configurable again
 	db := DB{Network: "tcp", Address: "127.0.0.1:6379", Database: 0}
-	server := Server{Identity: identity, DB: db}
+	server := Server{Identity: identity, Db: db}
 
 	log.Fatal(http.ListenAndServe(address, server.New()))
 }
