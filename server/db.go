@@ -1,15 +1,15 @@
 package server
 
 import (
-	"encoding/json"
 	"github.com/fzzy/radix/redis"
 	"time"
 )
 
 type DB struct {
-	Network  string
-	Address  string
-	Database int
+	Network    string
+	Address    string
+	Database   int
+	Connection redis.Client
 }
 
 func (db *DB) Connect() (*redis.Client, error) {
@@ -24,13 +24,4 @@ func (db *DB) Connect() (*redis.Client, error) {
 		return conn, err
 	}
 	return conn, err
-}
-
-func (db *DB) Save(conn *redis.Client, ident Ident) error {
-	data, err := json.Marshal(ident)
-	if err != nil {
-		panic(err)
-	}
-	result := conn.Cmd("zadd", "nodes", time.Now().Unix(), data)
-	return result.Err
 }

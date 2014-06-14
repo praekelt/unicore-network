@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -48,7 +49,7 @@ func TestPutNodeIdentity(t *testing.T) {
 	request, _ := http.NewRequest("PUT", "/network/foo", bytes.NewReader(b))
 	response := do_request(request)
 	if response.Code != http.StatusCreated {
-		t.Error("Unexpected HTTP response", response)
+		t.Error("Unexpected HTTP response", response.Code)
 	}
 	location_header := response.Header().Get("Location")
 	if location_header != "/network/foo" {
@@ -60,11 +61,15 @@ func TestGetNodeIdentity(t *testing.T) {
 	ident := CreateIdentity("foo", "bar", "baz")
 	server := new_server()
 	conn, _ := server.Db.Connect()
-	server.Db.Save(conn, ident)
-	// TODO: left off here, not sure yet how to structure data efficiently
-	//		 in Redis while still being able to pick out a single one by
-	//		 it's signature
-	// request, _ := http.NewRequest("GET", "/network/foo", bytes.NewReader(b))
-	// response := do_request(request)
-
+	server.PutIdent(conn, ident)
+	request, _ := http.NewRequest("GET", "/network/foo", nil)
+	response := do_request(request)
+	if response.Code != http.StatusOK {
+		t.Error("Unexpected HTTP response", response.Code)
+	}
+	found_ident, _ := NewIdentFromReader(response.Body)
+	if found_ident != ident {
+		t.Error("Unexpected Ident returned", found_ident)
+	}
+	fmt.Println(found_ident)
 }
