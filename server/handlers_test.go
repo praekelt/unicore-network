@@ -2,7 +2,6 @@ package server
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -69,5 +68,20 @@ func TestGetNodeIdentity(t *testing.T) {
 	if found_ident != ident {
 		t.Error("Unexpected Ident returned", found_ident)
 	}
-	fmt.Println(found_ident)
+}
+
+func TestDeleteNodeIdentity(t *testing.T) {
+	ident := CreateIdentity("foo", "bar", "baz")
+	server := new_server()
+	conn, _ := server.Db.Connect()
+	server.PutIdent(conn, ident)
+	request, _ := http.NewRequest("DELETE", "/network/foo", nil)
+	response := do_request(request)
+	if response.Code != http.StatusOK {
+		t.Error("Unexpected HTTP response", response.Code)
+	}
+	deleted_ident, _ := NewIdentFromReader(response.Body)
+	if deleted_ident != ident {
+		t.Error("Unexpected Ident returned", deleted_ident)
+	}
 }

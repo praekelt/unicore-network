@@ -44,3 +44,12 @@ func (s *Server) GetNodeIdentity(response http.ResponseWriter, request *http.Req
 	json_string, _ := ident.ToString()
 	return http.StatusOK, json_string
 }
+
+func (s *Server) DeleteNodeIdentity(response http.ResponseWriter, request *http.Request, db *redis.Client, params martini.Params) (int, string) {
+	ident, err := s.DeleteIdent(db, params["signature"])
+	if err != nil {
+		panic(err)
+	}
+	json_string, _ := ident.ToString()
+	return http.StatusOK, json_string
+}

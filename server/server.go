@@ -20,6 +20,7 @@ func (s *Server) New() *martini.ClassicMartini {
 	m.Get("/identity", s.GetOwnIdentity)
 	m.Put("/network/:signature", s.PutNodeIdentity)
 	m.Get("/network/:signature", s.GetNodeIdentity)
+	m.Delete("/network/:signature", s.DeleteNodeIdentity)
 	return m
 }
 
@@ -52,7 +53,6 @@ func (s *Server) GetIdent(db *redis.Client, signature string) (Ident, error) {
 	ident := Ident{}
 	get := db.Cmd("get", node_key(signature))
 	if get.Err != nil {
-		fmt.Println("1")
 		return ident, get.Err
 	}
 
@@ -63,6 +63,32 @@ func (s *Server) GetIdent(db *redis.Client, signature string) (Ident, error) {
 	str, err := get.Str()
 	if err != nil {
 		panic(err)
+	}
+	return NewIdentFromString(str)
+}
+
+func (s *Server) DeleteIdent(db *redis.Client, signature string) (Ident, error) {
+	ident := Ident{}
+	get := db.Cmd("get", node_key(signature))
+	if get.Err != nil {
+		return ident, get.Err
+	}
+
+	if get.Type == redis.NilReply {
+		return ident, errors.New(fmt.Sprintf("Ident %s does not exist.", signature))
+	}
+
+	str, err := get.Str()
+	if err != nil {
+		panic(err)
+	}
+	del := db.Cmd("del", node_key(signature))
+	if del.Err != nil {
+		return ident, del.Err
+	}
+
+	if num_deleted, _ := del.Int(); num_deleted == 0 {
+		return ident, errors.New(fmt.Sprintf("Deleting %s failed.", signature))
 	}
 	return NewIdentFromString(str)
 }
