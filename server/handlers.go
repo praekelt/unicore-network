@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/fzzy/radix/redis"
 	"github.com/go-martini/martini"
@@ -9,8 +8,8 @@ import (
 )
 
 func (s *Server) GetOwnIdentity(response http.ResponseWriter, request *http.Request) (int, string) {
-	bytes, _ := json.Marshal(s.Identity)
-	return http.StatusOK, string(bytes)
+	json, _ := s.Identity.ToString()
+	return http.StatusOK, json
 }
 
 func (s *Server) PutNodeIdentity(response http.ResponseWriter, request *http.Request, db *redis.Client, params martini.Params) (int, string) {

@@ -2,7 +2,6 @@ package server
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -33,8 +32,7 @@ func TestGetOwnIdentity(t *testing.T) {
 		t.Error("Expected 200 response code, got:", response.Code)
 	}
 
-	ident := Ident{}
-	err := json.Unmarshal(response.Body.Bytes(), &ident)
+	ident, err := NewIdentFromReader(response.Body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -45,7 +43,7 @@ func TestGetOwnIdentity(t *testing.T) {
 
 func TestPutNodeIdentity(t *testing.T) {
 	ident := CreateIdentity("foo", "bar", "baz")
-	b, _ := json.Marshal(ident)
+	b, _ := ident.ToJson()
 	request, _ := http.NewRequest("PUT", "/network/foo", bytes.NewReader(b))
 	response := do_request(request)
 	if response.Code != http.StatusCreated {

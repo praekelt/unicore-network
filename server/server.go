@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/fzzy/radix/redis"
@@ -33,7 +32,7 @@ func node_key(parts ...string) string {
 }
 
 func (s *Server) PutIdent(db *redis.Client, identity Ident) (Ident, error) {
-	data, err := json.Marshal(identity)
+	data, err := identity.ToJson()
 	if err != nil {
 		return identity, err
 	}
