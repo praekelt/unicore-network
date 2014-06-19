@@ -2,7 +2,9 @@ package server
 
 import (
 	"code.google.com/p/go-uuid/uuid"
+	"encoding/json"
 	"gopkg.in/yaml.v1"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +14,28 @@ type Ident struct {
 	Signature   string `json:"signature"`
 	Hostname    string `json:"hostname"`
 	DisplayName string `json:"display_name"`
+}
+
+func (i *Ident) ToString() (string, error) {
+	b, err := i.ToJson()
+	return string(b), err
+}
+
+func (i *Ident) ToJson() ([]byte, error) {
+	return json.Marshal(i)
+}
+
+func NewIdentFromString(s string) (Ident, error) {
+	ident := Ident{}
+	err := json.Unmarshal([]byte(s), &ident)
+	return ident, err
+}
+
+func NewIdentFromReader(reader io.Reader) (Ident, error) {
+	ident := Ident{}
+	decoder := json.NewDecoder(reader)
+	err := decoder.Decode(&ident)
+	return ident, err
 }
 
 func CreateIdentity(signature string, hostname string, display_name string) Ident {
