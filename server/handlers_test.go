@@ -85,6 +85,14 @@ func TestDeleteNodeIdentity(t *testing.T) {
 	if deleted_ident != ident {
 		t.Error("Unexpected Ident returned", deleted_ident)
 	}
+
+	index, err := server.GetIdentIndex(conn, 0, 10)
+	if err != nil {
+		panic(err)
+	}
+	if len(index) != 0 {
+		t.Error("Index should be empty, got", len(index))
+	}
 }
 
 func TestGetNodeIdentityIndex(t *testing.T) {

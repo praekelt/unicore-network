@@ -73,7 +73,6 @@ func (s *Server) GetIdentIndex(db *redis.Client, start int, stop int) ([]Ident, 
 	if err != nil {
 		return []Ident{}, err
 	}
-
 	idents := make([]Ident, len(zrange))
 	for index, signature := range zrange {
 		ident, err := s.GetIdent(db, signature)
@@ -103,6 +102,11 @@ func (s *Server) DeleteIdent(db *redis.Client, signature string) (Ident, error) 
 	del := db.Cmd("del", node_key(signature))
 	if del.Err != nil {
 		return ident, del.Err
+	}
+
+	zrem := db.Cmd("zrem", "nodes", signature)
+	if zrem.Err != nil {
+		return ident, zrem.Err
 	}
 
 	if num_deleted, _ := del.Int(); num_deleted == 0 {
