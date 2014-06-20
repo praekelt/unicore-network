@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -83,5 +84,42 @@ func TestDeleteNodeIdentity(t *testing.T) {
 	deleted_ident, _ := NewIdentFromReader(response.Body)
 	if deleted_ident != ident {
 		t.Error("Unexpected Ident returned", deleted_ident)
+	}
+}
+
+func TestGetNodeIdentityIndex(t *testing.T) {
+	ident := CreateIdentity("foo", "bar", "baz")
+	server := new_server()
+	conn, _ := server.Db.Connect()
+	server.PutIdent(conn, ident)
+	request, _ := http.NewRequest("GET", "/network", nil)
+	response := do_request(request)
+	if response.Code != http.StatusOK {
+		t.Error("Unexpected HTTP response", response.Code)
+	}
+
+	var indent_index []Ident
+	json.Unmarshal(response.Body.Bytes(), &indent_index)
+	found_ident := indent_index[0]
+	if found_ident.Signature != "foo" {
+		t.Error("Unexpected signature", found_ident.Signature)
+	}
+}
+
+func TestGetNodeIdentityIndexPagination(t *testing.T) {
+	ident := CreateIdentity("foo", "bar", "baz")
+	server := new_server()
+	conn, _ := server.Db.Connect()
+	server.PutIdent(conn, ident)
+	request, _ := http.NewRequest("GET", "/network?start=10", nil)
+	response := do_request(request)
+	if response.Code != http.StatusOK {
+		t.Error("Unexpected HTTP response", response.Code)
+	}
+
+	var indent_index []Ident
+	json.Unmarshal(response.Body.Bytes(), &indent_index)
+	if len(indent_index) != 0 {
+		t.Error("Unexpected length, expected 0 got", len(indent_index))
 	}
 }

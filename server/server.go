@@ -18,6 +18,7 @@ func (s *Server) New() *martini.ClassicMartini {
 	m := martini.Classic()
 	m.Use(s.Handler())
 	m.Get("/identity", s.GetOwnIdentity)
+	m.Get("/network", s.GetNodeIdentityIndex)
 	m.Put("/network/:signature", s.PutNodeIdentity)
 	m.Get("/network/:signature", s.GetNodeIdentity)
 	m.Delete("/network/:signature", s.DeleteNodeIdentity)
@@ -65,6 +66,23 @@ func (s *Server) GetIdent(db *redis.Client, signature string) (Ident, error) {
 		panic(err)
 	}
 	return NewIdentFromString(str)
+}
+
+func (s *Server) GetIdentIndex(db *redis.Client, start int, stop int) ([]Ident, error) {
+	zrange, err := db.Cmd("zrange", "nodes", start, stop).List()
+	if err != nil {
+		return []Ident{}, err
+	}
+
+	idents := make([]Ident, len(zrange))
+	for index, signature := range zrange {
+		ident, err := s.GetIdent(db, signature)
+		if err != nil {
+			return []Ident{}, err
+		}
+		idents[index] = ident
+	}
+	return idents, nil
 }
 
 func (s *Server) DeleteIdent(db *redis.Client, signature string) (Ident, error) {

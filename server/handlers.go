@@ -1,10 +1,12 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/fzzy/radix/redis"
 	"github.com/go-martini/martini"
 	"net/http"
+	"strconv"
 )
 
 func (s *Server) GetOwnIdentity(response http.ResponseWriter, request *http.Request) (int, string) {
@@ -52,4 +54,20 @@ func (s *Server) DeleteNodeIdentity(response http.ResponseWriter, request *http.
 	}
 	json_string, _ := ident.ToString()
 	return http.StatusOK, json_string
+}
+
+func (s *Server) GetNodeIdentityIndex(response http.ResponseWriter, request *http.Request, db *redis.Client, params martini.Params) (int, string) {
+	start, _ := strconv.Atoi(request.FormValue("start"))
+	stop, _ := strconv.Atoi(request.FormValue("stop"))
+
+	if stop <= start {
+		stop = start + 10
+	}
+
+	idents, err := s.GetIdentIndex(db, start, stop)
+	if err != nil {
+		panic(err)
+	}
+	bytes, err := json.Marshal(idents)
+	return http.StatusOK, string(bytes)
 }
