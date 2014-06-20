@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/praekelt/unicore-network/server"
+	. "github.com/praekelt/unicore-network/server"
 	"log"
 	"net/http"
 	"os/user"
@@ -27,10 +27,10 @@ func main() {
 		identity_file = filepath.Join(user.HomeDir, ".uc_identity.yaml")
 	}
 
-	identity, _ := server.GetOrCreateIdentity(identity_file)
+	identity, _ := GetOrCreateIdentity(identity_file)
 
 	// TODO: make this configurable again
-	db := DB{Network: "tcp", Address: "127.0.0.1:6379", Database: 0}
+	db := &DB{Network: "tcp", Address: "127.0.0.1:6379", Database: 0}
 	server := Server{Identity: identity, Db: db}
 
 	log.Fatal(http.ListenAndServe(address, server.New()))
