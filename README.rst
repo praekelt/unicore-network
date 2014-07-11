@@ -18,6 +18,7 @@ API
 ===
 
 ::
+
     GET /identity
 
 Returns the server's identity JSON, generally this document would look
@@ -30,6 +31,7 @@ something like this::
     }
 
 ::
+
     GET /network
 
 Returns a list of all known identities (other than the server's own) that
@@ -42,6 +44,7 @@ this specific node is aware of::
     }]
 
 ::
+
     PUT /network/:signature
 
 Allows for adding of another nodes identity. The payload must be a JSON
@@ -49,6 +52,7 @@ identity document and the document's signature must match the signature
 in the URLs path.
 
 ::
+
     GET /network/:signature
 
 Retrieve an identity that was previously put there. If found it returns
