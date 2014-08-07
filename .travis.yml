@@ -4,8 +4,6 @@ go:
 services:
   - redis-server
 install:
-  - go get -t github.com/go-martini/martini
-  - go get -t github.com/fzzy/radix/redis
   - go get -t gopkg.in/yaml.v1
 script:
   - ./run-tests.sh
